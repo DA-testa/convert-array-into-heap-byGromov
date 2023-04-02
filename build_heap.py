@@ -4,43 +4,62 @@ import heapq
 # Author: Aleksandrs Pučenkins 17.gr. 221RDB335
 
 def build_heap(data):
-
     swaps = []
-    heapq.heapify(data)
-    for i in range(len(data)):
-        while i != 0 and data[(i - 1) // 2] > data[i]:
-            j = (i - 1) // 2
-            swaps.append((i, j))
-            data[i], data[j] = data[j], data[i]
-            i = j
+    n = len(data)
+    for i in range(n // 2, -1, -1):
+        sift_down(i, data, swaps)
+
     return swaps
 
+def sift_down(i, data, swaps):
+    n = len(data)
+    r_child = 2 * i + 2
+    l_child = 2 * i + 1
 
-def read_input():
+    incorrect_child_candidate = 0
 
-    input_type = input().strip()
-    if input_type == 'I':
-        n = int(input().strip())
-        data = list(map(int, input().strip().split()))
-    elif input_type == 'F':
-        file_name = input().strip()
-        with open(file_name, 'r') as f:
-            n = int(f.readline().strip())
-            data = list(map(int, f.readline().strip().split()))
+    if l_child < len(data):
+        if r_child >= n or not correct_parent_to_child_relation(data[r_child], data[l_child]):
+            incorrect_child_candidate = l_child
+        else:
+            incorrect_child_candidate = r_child
+
+        if not correct_parent_to_child_relation(data[i], data[incorrect_child_candidate]):
+            swaps.append([i, incorrect_child_candidate])
+            data[i], data[incorrect_child_candidate] = data[incorrect_child_candidate], data[i]
+            sift_down(incorrect_child_candidate, data, swaps)
+        
+
+
+def correct_parent_to_child_relation(parent, child):
+    if parent <= child:
+        return True
     else:
-        raise ValueError(f"Invalid input type: {input_type}")
-    if len(data) != n:
-        raise ValueError(f"Expected {n} integers, but got {len(data)}")
-    return input_type, data
-
+        return False
 
 def main():
-    input_type, data = read_input()
+
+    input_type = input()
+    if 'I' in input_type:
+        n = int(input())
+        data = list(map(int, input().split()))
+    elif 'F' in input_type:
+        file_name = str(input())
+        path = "tests/" + file_name
+        if not "a" in path:
+            with open(path, 'r') as file:
+                n = int(file.readline())
+                data = list(map(int, file.readline().split()))
+    else:
+        exit()
+    assert len(data) == n
+    
     swaps = build_heap(data)
+
     print(len(swaps))
-    for i, j in swaps:
-        print(i, j)
+    if not 'F' in input_type:
+        for i, j in swaps:
+            print(i, j)
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
