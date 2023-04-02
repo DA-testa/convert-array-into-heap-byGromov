@@ -1,5 +1,4 @@
 # python3
-import heapq
 
 # Author: Aleksandrs Pučenkins 17.gr. 221RDB335
 
